@@ -1,0 +1,2 @@
+LetterO.jpg|C:\Users\UC244373\AndroidStudioProjects\sceneform-android-sdk-1.6.0\samples\augmentedimage\app\src\main\assets\X/LetterO.jpg
+X-image.jpg|C:\Users\UC244373\AndroidStudioProjects\sceneform-android-sdk-1.6.0\samples\augmentedimage\app\src\main\assets\X/X-image.jpg

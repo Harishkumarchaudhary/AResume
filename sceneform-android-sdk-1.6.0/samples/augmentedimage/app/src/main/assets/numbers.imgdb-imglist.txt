@@ -1,0 +1,3 @@
+1.jpg|C:\Users\UC244373\AndroidStudioProjects\sceneform-android-sdk-1.6.0\samples\augmentedimage\app\src\main\assets\numbers/1.jpg
+2.jpg|C:\Users\UC244373\AndroidStudioProjects\sceneform-android-sdk-1.6.0\samples\augmentedimage\app\src\main\assets\numbers/2.jpg
+3.jpg|C:\Users\UC244373\AndroidStudioProjects\sceneform-android-sdk-1.6.0\samples\augmentedimage\app\src\main\assets\numbers/3.jpg
