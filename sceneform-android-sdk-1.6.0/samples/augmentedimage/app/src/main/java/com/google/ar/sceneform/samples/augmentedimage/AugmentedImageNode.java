@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
@@ -32,6 +33,7 @@ import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.FixedHeightViewSizer;
 import com.google.ar.sceneform.rendering.ViewRenderable;
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.concurrent.CompletableFuture;
@@ -67,23 +69,21 @@ public class AugmentedImageNode extends AnchorNode {
 
           if (v == 0) {
 
+
+
               ImageView imageView = new ImageView(context);
-              //GlideUrl url = new GlideUrl("http://i.imgur.com/DvpvklR.png");
-              Glide.with(context)
-                      //.asDrawable()
-                      //.asGif()
-                      .load(R.drawable.s1)
-                      //.load("file:///root/sdcard/Download.Goku.png")
-                      //.load(url)
-                      //.submit(-1,-1)
-                      .into(imageView);
+              //Toast.makeText(context, "This is my Toast message!", Toast.LENGTH_LONG).show();
+
+              String imageUri = "https://i.imgur.com/P4fO2HC.jpg";
+
+              //http://fossilinsects.myspecies.info/sites/fossilinsects.myspecies.info/files/styles/slideshow_large/public/allparticipants.jpg?itok=QSckMPjG
+              Picasso.get().load(imageUri).memoryPolicy(MemoryPolicy.NO_CACHE).into(imageView);
 
             rendobject =
               ViewRenderable.builder()
                       .setView(context, imageView)
                       .setVerticalAlignment(ViewRenderable.VerticalAlignment.BOTTOM)
-                      //.setSizer(new FixedWidthViewSizer(0.2f))
-                      .setSizer(new FixedHeightViewSizer(0.2f))
+                      .setSizer(new FixedHeightViewSizer(0.15f))
                       .build()
                       .thenAccept(renderable -> {
                                   testViewRenderable = renderable;
@@ -94,21 +94,18 @@ public class AugmentedImageNode extends AnchorNode {
           if (v == 1) {
 
               ImageView imageView = new ImageView(context);
-              //GlideUrl url = new GlideUrl("http://i.imgur.com/DvpvklR.png");
-              Glide.with(context)
-                      //.asDrawable()
-                      //.asGif()
-                      .load(R.drawable.s2)
-                      //.load("file:///root/sdcard/Download.Goku.png")
-                      //.load(url)
-                      //.submit(-1,-1)
-                      .into(imageView);
-                          rendobject =
+              //Toast.makeText(context, "This is my Toast message!", Toast.LENGTH_LONG).show();
+              String imageUri = "https://image.slidesharecdn.com/itinerary3days2nights-160124163307/95/nueva-ecija-3days-2nights-itinerary-1-638.jpg";
+
+              //http://i.imgur.com/DvpvklR.png
+              Picasso.get().load(imageUri).into(imageView);
+
+             rendobject =
                                   ViewRenderable.builder()
                                           .setView(context, imageView)
                                           .setVerticalAlignment(ViewRenderable.VerticalAlignment.BOTTOM)
                                           //.setSizer(new FixedWidthViewSizer(0.2f))
-                                          .setSizer(new FixedHeightViewSizer(0.2f))
+                                          .setSizer(new FixedHeightViewSizer(0.15f))
                                           .build()
                                           .thenAccept(renderable -> {
                                                       testViewRenderable = renderable;
@@ -118,29 +115,34 @@ public class AugmentedImageNode extends AnchorNode {
           }
 
 
-      //View view = View.inflate(context, R.layout.test_view, null);
-      if (v == 2) {
+       if (v == 2) {
 
                               ImageView imageView = new ImageView(context);
+
+                               String imageUri = "https://cdn-images-1.medium.com/max/1200/1*d6Gb-e7bNDo0RUL-f5jgmw.png";
+                               //http://fossilinsects.myspecies.info/sites/fossilinsects.myspecies.info/files/styles/slideshow_large/public/allparticipants.jpg?itok=QSckMPjG
+
+                               Picasso.get().load(imageUri).into(imageView);
+
+                               /*
                               GlideUrl url = new GlideUrl("http://i.imgur.com/DvpvklR.png");
                               Glide.with(context)
                                       //.asDrawable()
-                                      //.asGif()
-                                      .load(R.drawable.s3)
+                                      .asGif()
+                                      .load(R.drawable.giphy)
                                       //.load("file:///root/sdcard/Download.Goku.png")
                                       //.load(url)
                                       //.submit(-1,-1)
                                       .into(imageView);
-
+*/
                        rendobject =
                               ViewRenderable.builder()
                                 .setView(context, imageView)
                                 .setVerticalAlignment(ViewRenderable.VerticalAlignment.BOTTOM)
-                                .setSizer(new FixedHeightViewSizer(0.2f))
+                                .setSizer(new FixedHeightViewSizer(0.15f))
                                 .build()
                                 .thenAccept(renderable -> {
                                     testViewRenderable = renderable;
-                                //ImageView imageView = (ImageView) renderable.getView();
 
                       /*   Picasso.get()
                                  .load(R.drawable.ai)
