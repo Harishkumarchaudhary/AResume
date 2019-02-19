@@ -1,0 +1,2 @@
+IMG_20190219_091116.jpg|C:\Users\UC244373\AndroidStudioProjects\sceneform-android-sdk-1.7.0\samples\augmentedimage\app\sampledata\IMGDB/IMG_20190219_091116.jpg
+IMG_20190219_091205.jpg|C:\Users\UC244373\AndroidStudioProjects\sceneform-android-sdk-1.7.0\samples\augmentedimage\app\sampledata\IMGDB/IMG_20190219_091205.jpg

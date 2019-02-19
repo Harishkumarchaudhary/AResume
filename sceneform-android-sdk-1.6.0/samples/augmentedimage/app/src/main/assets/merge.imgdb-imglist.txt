@@ -1,0 +1,3 @@
+merge1.jpg|C:\Users\UC244373\AndroidStudioProjects\sceneform-android-sdk-1.6.0\samples\augmentedimage\app\sampledata\Image DB/merge1.jpg
+merge2.jpg|C:\Users\UC244373\AndroidStudioProjects\sceneform-android-sdk-1.6.0\samples\augmentedimage\app\sampledata\Image DB/merge2.jpg
+merge3.jpg|C:\Users\UC244373\AndroidStudioProjects\sceneform-android-sdk-1.6.0\samples\augmentedimage\app\sampledata\Image DB/merge3.jpg

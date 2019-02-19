@@ -19,22 +19,35 @@ package com.google.ar.sceneform.samples.augmentedimage;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.ColorSpace;
+import android.graphics.SurfaceTexture;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
+import com.google.android.filament.Texture;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.rendering.Color;
+import com.google.ar.sceneform.rendering.ExternalTexture;
 import com.google.ar.sceneform.rendering.FixedHeightViewSizer;
+import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.ViewRenderable;
+import com.google.ar.sceneform.ux.ArFragment;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
+
+import org.w3c.dom.Text;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -51,13 +64,29 @@ public class AugmentedImageNode extends AnchorNode {
 
     // The augmented image represented by this node.
   private AugmentedImage image;
+    private ArFragment arFragment;
 
-  // Model of the corner.  We use completable futures here to simplify
+    @Nullable
+    private ModelRenderable videoRenderable;
+    private MediaPlayer mediaPlayer;
+
+    // The color to filter out of the video.
+    private static final Color CHROMA_KEY_COLOR = new Color(0.1843f, 1.0f, 0.098f);
+
+    // Controls the height of the video in world space.
+    private static final float VIDEO_HEIGHT_METERS = 0.20f;
+
+
+    // Model of the corner.  We use completable futures here to simplify
   // the error handling and asynchronous loading.  The loading is started with the
   // first construction of an instance, and then used when the image is set.
   private static CompletableFuture<Void> rendobject;
 
   private ViewRenderable testViewRenderable;
+  private ViewRenderable getTestViewRenderable2;
+
+
+
 
   public AugmentedImageNode(Context context) {
     // Upon construction, start loading the models for the corners of the frame.
@@ -67,82 +96,227 @@ public class AugmentedImageNode extends AnchorNode {
 
 
 
-          if (v == 0) {
+          if (v == 1) {
 
 
 
               ImageView imageView = new ImageView(context);
               //Toast.makeText(context, "This is my Toast message!", Toast.LENGTH_LONG).show();
 
-              String imageUri = "https://i.imgur.com/P4fO2HC.jpg";
+              //String imageUri = "https://i.imgur.com/P4fO2HC.jpg";
 
               //http://fossilinsects.myspecies.info/sites/fossilinsects.myspecies.info/files/styles/slideshow_large/public/allparticipants.jpg?itok=QSckMPjG
-              Picasso.get().load(imageUri).memoryPolicy(MemoryPolicy.NO_CACHE).into(imageView);
+              Picasso.get()
+                      .load(R.drawable.resume)
+                      .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                      .into(imageView);
 
             rendobject =
               ViewRenderable.builder()
                       .setView(context, imageView)
                       .setVerticalAlignment(ViewRenderable.VerticalAlignment.BOTTOM)
-                      .setSizer(new FixedHeightViewSizer(0.15f))
+                      .setSizer(new FixedHeightViewSizer(0.04f))
                       .build()
                       .thenAccept(renderable -> {
-                                  testViewRenderable = renderable;
+                                  getTestViewRenderable2 = renderable;
+
+                          Vector3 localPosition = new Vector3();
+                          Node cornerNode2;
+
+                          //localPosition.set(-0.5f * image.getExtentX(), 0.0f, -0.5f * image.getExtentZ());
+                          localPosition.set(+0.4f * image.getExtentX(), 0.01f, +0.2f * image.getExtentZ());
+                          cornerNode2 = new Node();
+                          cornerNode2.setParent(this);
+                          cornerNode2.setLocalPosition(localPosition);
+                          cornerNode2.setLocalRotation(Quaternion.axisAngle(new Vector3(-1f, 0, 0), 90f));
+                          cornerNode2.setRenderable(getTestViewRenderable2);
+
                       });
 
           }
 
-          if (v == 1) {
+          if (v == 0) {
 
-              ImageView imageView = new ImageView(context);
+              //ImageView imageView = new ImageView(context);
               //Toast.makeText(context, "This is my Toast message!", Toast.LENGTH_LONG).show();
-              String imageUri = "https://image.slidesharecdn.com/itinerary3days2nights-160124163307/95/nueva-ecija-3days-2nights-itinerary-1-638.jpg";
+              //String imageUri = "https://image.slidesharecdn.com/itinerary3days2nights-160124163307/95/nueva-ecija-3days-2nights-itinerary-1-638.jpg";
 
+
+
+              //arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
+
+              // Create an ExternalTexture for displaying the contents of the video.
+              ExternalTexture texture = new ExternalTexture();
+
+
+
+              // Create an Android MediaPlayer to capture the video on the external texture's surface.
+
+              mediaPlayer = MediaPlayer.create(context, R.raw.tr);
+              //mediaPlayer = MediaPlayer.create(context, Uri.parse("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4") );
+
+         /*     ColorSpace.Connector connector = ColorSpace.connect(
+                      ColorSpace.get(ColorSpace.Named.CIE_LAB),
+                      ColorSpace.get(ColorSpace.Named.BT709));
+*/
+              //mediaPlayer = MediaPlayer.create(context, Uri.parse("http://techslides.com/demos/sample-videos/small.mp4") );
+              //MediaPlayer mediaPlayer = new MediaPlayer();
+              //mediaPlayer.setDataSource("https://www.youtube.com/watch?v=aUN6RPMIoeo");
+              //mediaPlayer.prepare();
+              mediaPlayer.setSurface(texture.getSurface());
+              mediaPlayer.setLooping(true);
+
+              rendobject =
+                      ModelRenderable.builder()
+                              .setSource(context, R.raw.chroma_key_video)
+                              .build()
+                              .thenAccept(renderable -> {
+                                  videoRenderable = renderable;
+                                  renderable.getMaterial().setExternalTexture("videoTexture", texture);
+                                  renderable.getMaterial().setFloat4("keyColor", CHROMA_KEY_COLOR);
+                              })
+                              .exceptionally(
+                                      throwable -> {
+                                          Toast toast =
+                                                  Toast.makeText(context, "Unable to load video renderable", Toast.LENGTH_LONG);
+                                          toast.setGravity(Gravity.CENTER, 0, 0);
+                                          toast.show();
+                                          return null;
+                              });
+
+
+
+              Node videoNode = new Node();
+              videoNode.setParent(this);
+
+              float videoWidth = mediaPlayer.getVideoWidth();
+              float videoHeight = mediaPlayer.getVideoHeight();
+              videoNode.setLocalScale(
+                      new Vector3(
+                              VIDEO_HEIGHT_METERS * (videoWidth / videoHeight)*2/5, VIDEO_HEIGHT_METERS*2/5, 1.0f));
+
+
+// Start playing the video when the first node is placed.
+              if (!mediaPlayer.isPlaying()) {
+                  mediaPlayer.start();
+
+                  // Wait to set the renderable until the first frame of the  video becomes available.
+                  // This prevents the renderable from briefly appearing as a black quad before the video
+                  // plays.
+                  texture
+                          .getSurfaceTexture()
+                          .setOnFrameAvailableListener(
+                                  (SurfaceTexture surfaceTexture) -> {
+                                      Vector3 localPosition = new Vector3();
+                                      localPosition.set(+0.1f * image.getExtentX(), +0.1f, +0.3f * image.getExtentZ());
+                                      texture.getSurfaceTexture().setOnFrameAvailableListener(null);
+                                      videoNode.setLocalPosition(localPosition);
+                                      videoNode.setLocalRotation(Quaternion.axisAngle(new Vector3(-1f, 0, 0), 90f));
+                                      videoNode.setRenderable(videoRenderable);
+
+                                  });
+              } else {
+                  videoNode.setLocalRotation(Quaternion.axisAngle(new Vector3(-1f, 0, 0), 90f));
+                  videoNode.setRenderable(videoRenderable);
+              }
+
+
+              /*              GlideUrl url = new GlideUrl("http://i.imgur.com/DvpvklR.png");
+              Glide.with(context)
+                      //.asDrawable()
+                      .asGif()
+                      .load(R.drawable.dance)
+                      //.load("file:///root/sdcard/Download.Goku.png")
+                      //.load(url)
+                      //.submit(-1,-1)
+                      .into(imageView);
+                      */
               //http://i.imgur.com/DvpvklR.png
-              Picasso.get().load(imageUri).into(imageView);
-
-             rendobject =
-                                  ViewRenderable.builder()
-                                          .setView(context, imageView)
-                                          .setVerticalAlignment(ViewRenderable.VerticalAlignment.BOTTOM)
-                                          //.setSizer(new FixedWidthViewSizer(0.2f))
-                                          .setSizer(new FixedHeightViewSizer(0.15f))
-                                          .build()
-                                          .thenAccept(renderable -> {
-                                                      testViewRenderable = renderable;
-
-                                                });
+             /* Picasso.get()
+                      .load(imageUri)
+                      .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                      .into(imageView);
+*/
 
           }
 
 
        if (v == 2) {
+           ExternalTexture texture = new ExternalTexture();
+           mediaPlayer = MediaPlayer.create(context, R.raw.lion_chroma);
+           mediaPlayer.setSurface(texture.getSurface());
+           mediaPlayer.setLooping(true);
 
-                              ImageView imageView = new ImageView(context);
+           rendobject =
+                   ModelRenderable.builder()
+                           .setSource(context, R.raw.chroma_key_video)
+                           .build()
+                           .thenAccept(renderable -> {
+                               videoRenderable = renderable;
+                               renderable.getMaterial().setExternalTexture("videoTexture", texture);
+                               renderable.getMaterial().setFloat4("keyColor", CHROMA_KEY_COLOR);
+                           })
+                           .exceptionally(
+                                   throwable -> {
+                                       Toast toast =
+                                               Toast.makeText(context, "Unable to load video renderable", Toast.LENGTH_LONG);
+                                       toast.setGravity(Gravity.CENTER, 0, 0);
+                                       toast.show();
+                                       return null;
+                                   });
 
-                               String imageUri = "https://cdn-images-1.medium.com/max/1200/1*d6Gb-e7bNDo0RUL-f5jgmw.png";
+
+           Node videoNode = new Node();
+           videoNode.setParent(this);
+
+           float videoWidth = mediaPlayer.getVideoWidth();
+           float videoHeight = mediaPlayer.getVideoHeight();
+           videoNode.setLocalScale(
+                   new Vector3(
+                           VIDEO_HEIGHT_METERS * (videoWidth / videoHeight)*2/3, VIDEO_HEIGHT_METERS*2/3, 1.0f));
+           if (!mediaPlayer.isPlaying()) {
+               mediaPlayer.start();
+               texture
+                       .getSurfaceTexture()
+                       .setOnFrameAvailableListener(
+                               (SurfaceTexture surfaceTexture) -> {
+                                   Vector3 localPosition = new Vector3();
+                                   localPosition.set(+0.1f * image.getExtentX(), +0.2f, +0.3f * image.getExtentZ());
+                                   texture.getSurfaceTexture().setOnFrameAvailableListener(null);
+                                   videoNode.setLocalPosition(localPosition);
+                                   videoNode.setLocalRotation(Quaternion.axisAngle(new Vector3(-1f, 0, 0), 90f));
+                                   videoNode.setRenderable(videoRenderable);
+
+                               });
+           } else {
+               videoNode.setLocalRotation(Quaternion.axisAngle(new Vector3(-1f, 0, 0), 90f));
+               videoNode.setRenderable(videoRenderable);
+           }
+
+        /*                     ImageView imageView = new ImageView(context);
+
+                               //String imageUri = "https://cdn-images-1.medium.com/max/1200/1*d6Gb-e7bNDo0RUL-f5jgmw.png";
                                //http://fossilinsects.myspecies.info/sites/fossilinsects.myspecies.info/files/styles/slideshow_large/public/allparticipants.jpg?itok=QSckMPjG
 
-                               Picasso.get().load(imageUri).into(imageView);
+                               Picasso.get()
+                                       .load(R.drawable.grayicons2)
+                                       .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                                       .into(imageView);
 
-                               /*
-                              GlideUrl url = new GlideUrl("http://i.imgur.com/DvpvklR.png");
-                              Glide.with(context)
-                                      //.asDrawable()
-                                      .asGif()
-                                      .load(R.drawable.giphy)
-                                      //.load("file:///root/sdcard/Download.Goku.png")
-                                      //.load(url)
-                                      //.submit(-1,-1)
-                                      .into(imageView);
-*/
+
+
+
                        rendobject =
                               ViewRenderable.builder()
                                 .setView(context, imageView)
                                 .setVerticalAlignment(ViewRenderable.VerticalAlignment.BOTTOM)
-                                .setSizer(new FixedHeightViewSizer(0.15f))
+                                .setSizer(new FixedHeightViewSizer(0.20f))
                                 .build()
                                 .thenAccept(renderable -> {
                                     testViewRenderable = renderable;
+
+
+*/
 
                       /*   Picasso.get()
                                  .load(R.drawable.ai)
@@ -155,7 +329,7 @@ public class AugmentedImageNode extends AnchorNode {
                                 //.load("file:///root/sdcard/Download.Goku.png")
                                 //.load("http://i.imgur.com/DvpvklR.png")
 */
-                     });
+           // });
 
 
   }
@@ -194,16 +368,19 @@ public class AugmentedImageNode extends AnchorNode {
     setAnchor(image.createAnchor(image.getCenterPose()));
 
     // Make the node(s).
+ /*
     Vector3 localPosition = new Vector3();
     Node cornerNode;
 
     //localPosition.set(-0.5f * image.getExtentX(), 0.0f, -0.5f * image.getExtentZ());
-    localPosition.set(-0.0f * image.getExtentX(), 0.1f, +0.2f * image.getExtentZ());
+    localPosition.set(-0.0f * image.getExtentX(), 0.30f, +0.5f * image.getExtentZ());
     cornerNode = new Node();
     cornerNode.setParent(this);
     cornerNode.setLocalPosition(localPosition);
     cornerNode.setLocalRotation(Quaternion.axisAngle(new Vector3(-1f, 0, 0), 90f));
     cornerNode.setRenderable(testViewRenderable);
+    //cornerNode.setRenderable(videoRenderable);
+  */
   }
 }
 

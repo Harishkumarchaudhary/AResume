@@ -16,13 +16,16 @@
 
 package com.google.ar.sceneform.samples.augmentedimage;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import com.google.ar.core.AugmentedImage;
+import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
+import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
 import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.samples.common.helpers.SnackbarHelper;
@@ -35,10 +38,16 @@ import java.util.Map;
  * This application demonstrates using augmented images to place anchor nodes. app to include image
  * tracking functionality.
  */
+
+
 public class AugmentedImageActivity extends AppCompatActivity {
+
 
   private ArFragment arFragment;
   private ImageView fitToScanView;
+
+
+
 
   // Augmented image and its associated center pose anchor, keyed by the augmented image in
   // the database.
@@ -47,7 +56,12 @@ public class AugmentedImageActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+
+
     setContentView(R.layout.activity_main);
+
+
 
     arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
     fitToScanView = findViewById(R.id.image_view_fit_to_scan);
@@ -58,8 +72,14 @@ public class AugmentedImageActivity extends AppCompatActivity {
   @Override
   protected void onResume() {
     super.onResume();
+
     if (augmentedImageMap.isEmpty()) {
       fitToScanView.setVisibility(View.VISIBLE);
+
+        Session session = new Session(this);
+        Config config = new Config(session);
+        config.setFocusMode(Config.FocusMode.AUTO);
+        session.configure(config);
     }
   }
 

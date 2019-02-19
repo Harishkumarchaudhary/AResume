@@ -1,0 +1,46 @@
+{
+  materials: [
+    {
+      name: 'DefaultMaterial',
+      parameters: [
+        {
+          baseColor: null,
+        },
+        {
+          baseColorTint: [
+            0.59,
+            0.59,
+            0.59,
+            1,
+          ],
+        },
+        {
+          metallic: 0,
+        },
+        {
+          roughness: 1,
+        },
+        {
+          opacity: null,
+        },
+        {
+                    disableChromaKey : false,
+                }
+      ],
+
+      source: 'sampledata/models/chroma_key_video_material.mat',
+    },
+  ],
+  model: {
+    attributes: [
+      'Position',
+      'TexCoord',
+      'Orientation',
+    ],
+    collision: {},
+    file: 'sampledata/models/chroma_key_video.obj',
+    name: 'chroma_key_video',
+    recenter: 'root',
+  },
+  version: '0.54:1',
+}
